@@ -26,7 +26,6 @@ const Transactions = () => {
   });
   useEffect(() => {}, []);
   let transactions = useSelector((state) => state.user.transaction);
-  console.log(transactions);
   useEffect(() => {
     console.log(transactions);
     if (!transactions?.length) return;
