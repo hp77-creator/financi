@@ -42,7 +42,7 @@ const IndexComponent = () => {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: userState.isLoggedIn ? (
+      element: true ? (
         <App>
           {" "}
           <Home />

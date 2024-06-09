@@ -52,9 +52,9 @@ function getItem(label, key, icon, children, type) {
 }
 const { Meta } = Card;
 const items = [
-  getItem("Option 1", "1", <PieChartOutlined />),
-  getItem("Option 2", "2", <DesktopOutlined />),
-  getItem("Option 3", "3", <ContainerOutlined />),
+  getItem("Pie Chart", "1", <PieChartOutlined />),
+  getItem("Desktop", "2", <DesktopOutlined />),
+  // getItem("", "3", <ContainerOutlined />),
 ];
 const Home = () => {
   const dispatch = useDispatch();
@@ -84,111 +84,105 @@ const Home = () => {
     }
   };
   const uploadFile = async () => {
-    // if (files.length === 0) {
-    //   alert("Please Upload 1 file");
-    //   return;
-    // }
     console.log(files.originFileObj);
     let formData = new FormData();
     formData.append("file", files.originFileObj);
     console.log(formData.values());
 
-    let response = await fetch(PDF_HOST + "add-pdf", {
-      method: "POST",
+    // let response = await fetch(PDF_HOST + "add-pdf", {
+    //   method: "POST",
 
-      body: formData,
-    });
-    let jsonData = undefined;
-    if (response.ok) {
-      let data = await response.text();
-      csv({
-        noheader: true,
-        output: "csv",
-      })
-        .fromString(data)
-        .then((csvRow) => {
-          console.log(csvRow); // => [["1","2","3"], ["4","5","6"], ["7","8","9"]]
-          let keys = csvRow[0];
-          let tempObj = [];
+    //   body: formData,
+    // });
+    // if (response.ok) {
+    //   let data = await response.text();
+    //   csv({
+    //     noheader: true,
+    //     output: "csv",
+    //   })
+    //     .fromString(data)
+    //     .then((csvRow) => {
+    //       console.log(csvRow); // => [["1","2","3"], ["4","5","6"], ["7","8","9"]]
+    //       let keys = csvRow[0];
+    //       let tempObj = [];
 
-          for (let i = 1; i < csvRow.length; i++) {
-            tempObj.push({
-              user_id: userState.user_id,
-              merchant_name: csvRow[i][2] == 0 ? "google" : csvRow[i][2],
-              amount:
-                Number(csvRow[i][4]) == 0
-                  ? Number(csvRow[i][5])
-                  : Number(csvRow[i][4]),
-              closing_balance:
-                Number(csvRow[i][6]) == 0 ? 0 : Number(csvRow[i][6]),
-              tag_id: 1,
-              type: Number(csvRow[i][4]) == 0 ? true : false,
-              date: csvRow[i][0].slice(0, 10),
-              description:
-                csvRow[i][2] == "" ? "EMPTY_DESCRPTION" : csvRow[i][2],
-              reference_number: csvRow[i][3] == "" ? "EMPTY" : csvRow[i][3],
-            });
-          }
+    //       for (let i = 1; i < csvRow.length; i++) {
+    //         tempObj.push({
+    //           user_id: userState.user_id,
+    //           merchant_name: csvRow[i][2] == 0 ? "google" : csvRow[i][2],
+    //           amount:
+    //             Number(csvRow[i][4]) == 0
+    //               ? Number(csvRow[i][5])
+    //               : Number(csvRow[i][4]),
+    //           closing_balance:
+    //             Number(csvRow[i][6]) == 0 ? 0 : Number(csvRow[i][6]),
+    //           tag_id: 1,
+    //           type: Number(csvRow[i][4]) == 0 ? true : false,
+    //           date: csvRow[i][0].slice(0, 10),
+    //           description:
+    //             csvRow[i][2] == "" ? "EMPTY_DESCRPTION" : csvRow[i][2],
+    //           reference_number: csvRow[i][3] == "" ? "EMPTY" : csvRow[i][3],
+    //         });
+    //       }
 
-          // let TransactionsData = [];
-          // let ConvertedData = [];
-          // let len = Object.keys(data.Balance).length;
-          // console.log(len, data);
-          // for (let i = 1; i <= len; i++) {
-          //   TransactionsData.push({
-          //     "Txn Date": data["Txn Date"][i],
-          //     "Value Date": data["Value Date"][i],
-          //     Description: data["Description"][i],
-          //     "Ref No./Cheque No.": data["Ref No./Cheque No."][i],
-          //     Debit: data["Debit"][i],
-          //     Credit: data["Credit"][i],
-          //     Balance: data["Balance"][i],
-          //   });
+    //       // let TransactionsData = [];
+    //       // let ConvertedData = [];
+    //       // let len = Object.keys(data.Balance).length;
+    //       // console.log(len, data);
+    //       // for (let i = 1; i <= len; i++) {
+    //       //   TransactionsData.push({
+    //       //     "Txn Date": data["Txn Date"][i],
+    //       //     "Value Date": data["Value Date"][i],
+    //       //     Description: data["Description"][i],
+    //       //     "Ref No./Cheque No.": data["Ref No./Cheque No."][i],
+    //       //     Debit: data["Debit"][i],
+    //       //     Credit: data["Credit"][i],
+    //       //     Balance: data["Balance"][i],
+    //       //   });
 
-          //   ConvertedData.push({
-          //     user_id: userState.user_id,
-          //     merchant_name:
-          //       data["Description"][i] == 0 ? "google" : data["Description"][i],
-          //     amount:
-          //       Number(data["Debit"][i]) == 0
-          //         ? Number(data["Credit"][i])
-          //         : Number(data["Debit"][i]),
-          //     closing_balance:
-          //       Number(data["Balance"][i]) == 0
-          //         ? 0
-          //         : Number(data["Balance"][i]),
-          //     tag_id: 1,
-          //     type: Number(data["Debit"][i]) == 0 ? true : false,
-          //     date: "2022-12-12",
-          //     description:
-          //       data["Description"][i] == ""
-          //         ? "EMPTY_DESCRPTION"
-          //         : data["Description"][i],
-          //     reference_number:
-          //       data["Ref No./Cheque No."][i] == ""
-          //         ? "EMPTY"
-          //         : data["Ref No./Cheque No."][i],
-          //   });
-          // }
-          submitTransactions(tempObj);
-          dispatch(addConvertedData(tempObj));
-          console.log(tempObj);
-          dispatch(addTransactions(tempObj));
-        });
-      console.log(data);
-    } else {
-      console.log(response);
-    }
+    //       //   ConvertedData.push({
+    //       //     user_id: userState.user_id,
+    //       //     merchant_name:
+    //       //       data["Description"][i] == 0 ? "google" : data["Description"][i],
+    //       //     amount:
+    //       //       Number(data["Debit"][i]) == 0
+    //       //         ? Number(data["Credit"][i])
+    //       //         : Number(data["Debit"][i]),
+    //       //     closing_balance:
+    //       //       Number(data["Balance"][i]) == 0
+    //       //         ? 0
+    //       //         : Number(data["Balance"][i]),
+    //       //     tag_id: 1,
+    //       //     type: Number(data["Debit"][i]) == 0 ? true : false,
+    //       //     date: "2022-12-12",
+    //       //     description:
+    //       //       data["Description"][i] == ""
+    //       //         ? "EMPTY_DESCRPTION"
+    //       //         : data["Description"][i],
+    //       //     reference_number:
+    //       //       data["Ref No./Cheque No."][i] == ""
+    //       //         ? "EMPTY"
+    //       //         : data["Ref No./Cheque No."][i],
+    //       //   });
+    //       // }
+    //       submitTransactions(tempObj);
+    //       dispatch(addConvertedData(tempObj));
+    //       console.log(tempObj);
+    //       dispatch(addTransactions(tempObj));
+    //     });
+    //   console.log(data);
+    // } else {
+    //   console.log(response);
+    // }
+
+
   };
   const normFile = (e) => {
-    console.log("Upload event:", e);
-    setFiles(e.file);
-    return;
+    console.log('Upload event:', e);
     if (Array.isArray(e)) {
-      setFiles(e.fileList);
       return e;
     }
-
+    setFiles(e?.fileList ?? []);
     return e?.fileList;
   };
 
@@ -392,7 +386,7 @@ const Home = () => {
           }}
         >
           <Card style={{ width: "100%", marginTop: 16, height: "min-content" }}>
-            <Form>
+            <Form onFinish={() => {}}>
               <Form.Item>
                 <Form.Item
                   name="dragger"
@@ -400,7 +394,13 @@ const Home = () => {
                   getValueFromEvent={normFile}
                   noStyle
                 >
-                  <Upload.Dragger name="files">
+                  <Upload.Dragger 
+                  name="files"
+                  onRemove={() => {
+                    setFiles([]);
+                    return true;
+                  }}
+                  >
                     <p className="ant-upload-drag-icon">
                       <InboxOutlined />
                     </p>
@@ -411,11 +411,12 @@ const Home = () => {
                 </Form.Item>
               </Form.Item>
 
-              <Form.Item style={{ textAlign: "center" }}>
+              <Form.Item style={{ textAlign: "center" }} shouldUpdate>
                 <Button
                   type="primary"
                   size="large"
                   htmlType="submit"
+                  disabled ={files.length == 0} 
                   onClick={uploadFile}
                 >
                   Submit

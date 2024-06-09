@@ -11,3 +11,7 @@
 .dashboardInfoContainer {
   padding: 20px;
 }
+
+.ant-btn :disabled{
+  color: grey;
+}
