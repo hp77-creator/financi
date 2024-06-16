@@ -33,45 +33,6 @@ const AccountSummary = ({openingBalance, closingBalance}) => {
           </Typography.Title>{" "}
         </div>
       </div>
-      <Typography.Title level={4} style={{ padding: "10px 0px 0px 10px" }}>
-        Overall
-      </Typography.Title>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            Opening -
-          </Typography.Title>{" "}
-        </div>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            ₹ 5,38,231.24
-          </Typography.Title>{" "}
-        </div>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            Closing -
-          </Typography.Title>{" "}
-        </div>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            ₹ 5,42,145.45
-          </Typography.Title>{" "}
-        </div>
-      </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            Total -
-          </Typography.Title>{" "}
-        </div>
-        <div>
-          <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            ₹ 42,145.45
-          </Typography.Title>{" "}
-        </div>
-      </div>
     </div>
   );
 };

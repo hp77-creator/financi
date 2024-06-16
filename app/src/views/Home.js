@@ -265,6 +265,22 @@ const normFile = (e) => {
             <div>
               <Card>
                 Thank you for loading your statement.
+                <br/>
+                <Button
+                type="primary"
+                size="small"
+                onClick={() => {
+                  setInputBox(true);
+                  setFiles([]);
+                  setBalanceData({
+                    openingBalance: 0,
+                    closingBalance: 0
+                  })
+                }}
+                >
+                  Click here
+                </Button>
+                <br/>to see view for another statement.
               </Card>
             </div> :
             <Form onFinish={() => {}}>
