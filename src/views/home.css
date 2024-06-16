@@ -1,0 +1,17 @@
+.listItem {
+  transition-duration: 0.1s;
+  border-radius: 5px;
+}
+.listItem:hover {
+  cursor: pointer;
+
+  background-color: #ededed;
+}
+
+.dashboardInfoContainer {
+  padding: 20px;
+}
+
+.ant-btn :disabled{
+  color: grey;
+}
