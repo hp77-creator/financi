@@ -1,6 +1,6 @@
 import { Card, Typography } from "antd";
 import React from "react";
-const AccountSummary = () => {
+const AccountSummary = ({openingBalance, closingBalance}) => {
   return (
     <div>
       <Typography.Title
@@ -17,7 +17,7 @@ const AccountSummary = () => {
         </div>
         <div>
           <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            ₹ 9,494
+            ₹ {openingBalance} 
           </Typography.Title>{" "}
         </div>
       </div>
@@ -29,7 +29,7 @@ const AccountSummary = () => {
         </div>
         <div>
           <Typography.Title level={5} style={{ padding: "10px 0px 0px 10px" }}>
-            ₹ 8, 904
+            ₹ {closingBalance} 
           </Typography.Title>{" "}
         </div>
       </div>

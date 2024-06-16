@@ -10,6 +10,8 @@ export const userSlice = createSlice({
     transaction: [],
     convertedData: [],
     tags: {},
+    openingBalance: 0,
+    closingBalance: 0,
   },
   reducers: {
     login: (state, action) => {

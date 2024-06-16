@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import readXlsxFile from 'read-excel-file';
 import {
   AppstoreOutlined,
   ContainerOutlined,
@@ -62,122 +63,38 @@ const Home = () => {
   const userState = useSelector((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
   const [converted, setConverted] = useState([]);
+  const [balanceData, setBalanceData] = useState({openingBalance: 0, closingBalance: 0});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [inputBox, setInputBox] = useState(true);
   const [modalItem, setModalItem] = useState({});
-  const submitTransactions = async (data) => {
-    let response = await fetch(
-      HOST + "api/transactions",
+  
+// Upload file function
+const handleUpload = async () => {
+  setInputBox(false);
+  if (files.length === 0) {
+    return;
+  }
 
-      {
-        method: "POST",
-        headers: {
-          "Content-type": "application/json",
-        },
-        body: JSON.stringify(data),
-      }
-    );
-    if (response.ok) {
-      alert("Transactions Uploaded");
-      window.location.reload();
-    } else {
+  const file = files[0].originFileObj;
+
+  try {
+    // Ensure the file is of the correct type
+    if (file.type !== 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet') {
+      throw new Error('Invalid file type. Please upload an Excel file.');
     }
-  };
-  const uploadFile = async () => {
-    console.log(files.originFileObj);
-    let formData = new FormData();
-    formData.append("file", files.originFileObj);
-    console.log(formData.values());
 
-    // let response = await fetch(PDF_HOST + "add-pdf", {
-    //   method: "POST",
+    const rows = await readXlsxFile(file);
+    console.log('Read file data:', rows);
 
-    //   body: formData,
-    // });
-    // if (response.ok) {
-    //   let data = await response.text();
-    //   csv({
-    //     noheader: true,
-    //     output: "csv",
-    //   })
-    //     .fromString(data)
-    //     .then((csvRow) => {
-    //       console.log(csvRow); // => [["1","2","3"], ["4","5","6"], ["7","8","9"]]
-    //       let keys = csvRow[0];
-    //       let tempObj = [];
-
-    //       for (let i = 1; i < csvRow.length; i++) {
-    //         tempObj.push({
-    //           user_id: userState.user_id,
-    //           merchant_name: csvRow[i][2] == 0 ? "google" : csvRow[i][2],
-    //           amount:
-    //             Number(csvRow[i][4]) == 0
-    //               ? Number(csvRow[i][5])
-    //               : Number(csvRow[i][4]),
-    //           closing_balance:
-    //             Number(csvRow[i][6]) == 0 ? 0 : Number(csvRow[i][6]),
-    //           tag_id: 1,
-    //           type: Number(csvRow[i][4]) == 0 ? true : false,
-    //           date: csvRow[i][0].slice(0, 10),
-    //           description:
-    //             csvRow[i][2] == "" ? "EMPTY_DESCRPTION" : csvRow[i][2],
-    //           reference_number: csvRow[i][3] == "" ? "EMPTY" : csvRow[i][3],
-    //         });
-    //       }
-
-    //       // let TransactionsData = [];
-    //       // let ConvertedData = [];
-    //       // let len = Object.keys(data.Balance).length;
-    //       // console.log(len, data);
-    //       // for (let i = 1; i <= len; i++) {
-    //       //   TransactionsData.push({
-    //       //     "Txn Date": data["Txn Date"][i],
-    //       //     "Value Date": data["Value Date"][i],
-    //       //     Description: data["Description"][i],
-    //       //     "Ref No./Cheque No.": data["Ref No./Cheque No."][i],
-    //       //     Debit: data["Debit"][i],
-    //       //     Credit: data["Credit"][i],
-    //       //     Balance: data["Balance"][i],
-    //       //   });
-
-    //       //   ConvertedData.push({
-    //       //     user_id: userState.user_id,
-    //       //     merchant_name:
-    //       //       data["Description"][i] == 0 ? "google" : data["Description"][i],
-    //       //     amount:
-    //       //       Number(data["Debit"][i]) == 0
-    //       //         ? Number(data["Credit"][i])
-    //       //         : Number(data["Debit"][i]),
-    //       //     closing_balance:
-    //       //       Number(data["Balance"][i]) == 0
-    //       //         ? 0
-    //       //         : Number(data["Balance"][i]),
-    //       //     tag_id: 1,
-    //       //     type: Number(data["Debit"][i]) == 0 ? true : false,
-    //       //     date: "2022-12-12",
-    //       //     description:
-    //       //       data["Description"][i] == ""
-    //       //         ? "EMPTY_DESCRPTION"
-    //       //         : data["Description"][i],
-    //       //     reference_number:
-    //       //       data["Ref No./Cheque No."][i] == ""
-    //       //         ? "EMPTY"
-    //       //         : data["Ref No./Cheque No."][i],
-    //       //   });
-    //       // }
-    //       submitTransactions(tempObj);
-    //       dispatch(addConvertedData(tempObj));
-    //       console.log(tempObj);
-    //       dispatch(addTransactions(tempObj));
-    //     });
-    //   console.log(data);
-    // } else {
-    //   console.log(response);
-    // }
-
-
-  };
-  const normFile = (e) => {
+    // Perform the upload or any other necessary actions with the file data
+    const processed = processData(rows);
+    setBalanceData(processed.balanceData);
+  } catch (error) {
+    console.error('Error uploading file:', error.message);
+  }
+};
+const normFile = (e) => {
     console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
@@ -202,76 +119,34 @@ const Home = () => {
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
   };
-  const fetchTags = async () => {
-    try {
-      let res = await fetch(HOST + "api/tags");
-      if (res.ok) {
-        let data = await res.json();
-        console.log(data);
-        // setTransactions(data);
-        dispatch(addTags(data));
-      } else {
-      }
-    } catch (error) {
-      console.error(error);
-    }
+
+  const processData = (data) => {
+    const columns = data[0]; // Assuming the first row is the header
+    const narrationIndex = columns.indexOf('Narration');
+    const withdrawalAmtIndex = columns.indexOf('Withdrawal Amt.');
+    const depositAmtIndex = columns.indexOf('Deposit Amt.');
+
+    const transactionData = data.slice(1).map((row) => ({
+      narration: row[narrationIndex],
+      withdrawalAmt: parseFloat(row[withdrawalAmtIndex]) || 0,
+      depositAmt: parseFloat(row[depositAmtIndex]) || 0,
+    }));
+
+    // Find the row containing "Opening Balance" and "Closing Balance"
+    const balanceLabelsRow = data.find(row => row.includes('Opening Balance'));
+    const balanceValuesRow = data[data.indexOf(balanceLabelsRow) + 1];
+
+    const openingBalance = parseFloat(balanceValuesRow[0]) || 0;
+    const closingBalance = parseFloat(balanceValuesRow[6]) || 0;
+
+    return {
+      transactionData,
+      balanceData: { openingBalance, closingBalance },
+    };
   };
-  const fetchTransactions = async () => {
-    try {
-      let res = await fetch(HOST + "api/transactions/" + userState.uid);
-      if (res.ok) {
-        let data = await res.json();
-        console.log(data);
-        dispatch(addTransactions(data));
-        // setTransactions(data);
-      } else {
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
-  useEffect(() => {
-    fetchTags();
-    fetchTransactions();
-  }, []);
-  let loadTransactions = async () => {
-    console.log(userState);
-    let Response = await APYHUB_Bar_Request({
-      title: "Simple Bar Chart",
-      theme: "Light",
-      data: [
-        {
-          value: 10,
-          label: "label a",
-        },
-        {
-          value: 20,
-          label: "label b",
-        },
-        {
-          value: 80,
-          label: "label c",
-        },
-        {
-          value: 50,
-          label: "label d",
-        },
-        {
-          value: 70,
-          label: "label e",
-        },
-        {
-          value: 25,
-          label: "label f",
-        },
-        {
-          value: 60,
-          label: "label g",
-        },
-      ],
-    });
-    console.log(Response);
-  };
+
+
+
   useEffect(() => {
     // loadTransactions();
   }, [userState.transactions]);
@@ -386,6 +261,12 @@ const Home = () => {
           }}
         >
           <Card style={{ width: "100%", marginTop: 16, height: "min-content" }}>
+            { !inputBox ? 
+            <div>
+              <Card>
+                Thank you for loading your statement.
+              </Card>
+            </div> :
             <Form onFinish={() => {}}>
               <Form.Item>
                 <Form.Item
@@ -394,20 +275,20 @@ const Home = () => {
                   getValueFromEvent={normFile}
                   noStyle
                 >
-                  <Upload.Dragger 
-                  name="files"
-                  onRemove={() => {
-                    setFiles([]);
-                    return true;
-                  }}
-                  >
-                    <p className="ant-upload-drag-icon">
-                      <InboxOutlined />
-                    </p>
-                    <p className="ant-upload-text">
-                      Upload your Bank Statement Here
-                    </p>
-                  </Upload.Dragger>
+                <Upload.Dragger 
+                name="files"
+                onRemove={() => {
+                  setFiles([]);
+                  return true;
+                }}
+                >
+                
+                  <p className="ant-upload-drag-icon">
+                    <InboxOutlined />
+                  </p>
+                  <p className="ant-upload-text">
+                    Upload your Bank Statement Here
+                  </p></Upload.Dragger>
                 </Form.Item>
               </Form.Item>
 
@@ -417,17 +298,18 @@ const Home = () => {
                   size="large"
                   htmlType="submit"
                   disabled ={files.length == 0} 
-                  onClick={uploadFile}
+                  onClick={handleUpload}
                 >
                   Submit
                 </Button>
               </Form.Item>
             </Form>
+}
           </Card>
           <Divider style={{ margin: "0px" }}></Divider>
           <div style={{ display: "flex" }} className="dashboardInfoContainer">
             <div style={{ width: "100%" }}>
-              <Transactions />
+              <Transactions openingBalance={balanceData.openingBalance} closingBalance={balanceData.closingBalance}/>
             </div>
             <div
               style={{

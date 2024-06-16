@@ -18,7 +18,7 @@ import AccountSummary from "./AccountSummary";
 import HighchartsReact from "highcharts-react-official";
 var Highcharts = require("highcharts");
 
-const Transactions = () => {
+const Transactions = ({openingBalance, closingBalance}) => {
   const [open, setOpen] = useState(false);
   let [chartState, setChartState] = useState({
     courseSelected: "Monthly Spends",
@@ -106,7 +106,7 @@ const Transactions = () => {
             </Typography.Title>
           }
         >
-          <AccountSummary />
+          <AccountSummary openingBalance={openingBalance} closingBalance={closingBalance}/>
         </Card>
         <div
           style={{
