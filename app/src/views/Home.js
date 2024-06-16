@@ -68,6 +68,40 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [inputBox, setInputBox] = useState(true);
   const [modalItem, setModalItem] = useState({});
+  const [recentTxn, setRecentTxn] = useState([]);
+
+
+  const isValidDateFormat = (str) => {
+    // Regular expression to match DD/MM/YY format
+    const regex = /^\d{2}\/\d{2}\/\d{2}$/;
+  
+    return regex.test(str);
+  };
+  const formatDate = (date) => {
+    // Extracting day, month, and year from the Date object
+    const day = String(date.getDate()).padStart(2, '0');     // Get day and pad with leading zero if necessary
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Get month (zero-based) and pad with leading zero if necessary
+    const year = String(date.getFullYear()).slice(-2);   // Get year and take the last two digits
+  
+    // Constructing the formatted date string
+    const formattedDate = `${day}/${month}/${year}`;
+  
+    return formattedDate;
+  };
+  const parseDate = (dateString) => {
+    // Assuming dateString is in the format DD/MM/YY
+    console.log("datestring is ", dateString);
+    if(dateString == null || !isValidDateFormat(dateString)) return new Date();
+    const [day, month, year] = dateString.split('/');
+  
+    // Adjusting the year to a full year (e.g., '21' -> '2021')
+    const fullYear = 2000 + parseInt(year); // Adjust according to your date format
+  
+    // Creating a new Date object
+    const date = new Date(fullYear, parseInt(month) - 1, parseInt(day)); // Month is 0-based in Date object
+  
+    return date;
+  };
   
 // Upload file function
 const handleUpload = async () => {
@@ -85,14 +119,49 @@ const handleUpload = async () => {
     }
 
     const rows = await readXlsxFile(file);
-    console.log('Read file data:', rows);
 
     // Perform the upload or any other necessary actions with the file data
     const processed = processData(rows);
+    setRecentTxn(processed.latestNarrations);
+    console.log("narrations are",processed.latestNarrations);
     setBalanceData(processed.balanceData);
   } catch (error) {
     console.error('Error uploading file:', error.message);
   }
+};
+
+const processNarration = (narration) => {
+  let mode = '';
+  let nameNarr = '';
+
+  // Splitting the narration by '-' and ' ' to find the mode and name
+  const parts = narration.split(/[-\s]+/);
+
+  // Determine mode
+  if (parts.length > 0) {
+    mode = parts[0].toUpperCase(); // First part before '-' or ' ' is the mode
+  }
+
+  // Determine name
+  const atIndex = narration.indexOf('@');
+  if (atIndex !== -1) {
+    // If '@' is found, extract name from '-' to '@'
+    const dashIndex = narration.lastIndexOf('-', atIndex);
+    if (dashIndex !== -1) {
+      nameNarr = narration.substring(dashIndex + 1, atIndex).trim();
+    }
+  } else {
+    // If no '@', take everything after the last '-'
+    const lastDashIndex = narration.lastIndexOf('-');
+    if (lastDashIndex !== -1) {
+      nameNarr = narration.substring(lastDashIndex + 1).trim();
+    }
+  }
+
+  return {
+    mode,
+    nameNarr,
+  };
 };
 const normFile = (e) => {
     console.log('Upload event:', e);
@@ -123,14 +192,35 @@ const normFile = (e) => {
   const processData = (data) => {
     const columns = data[0]; // Assuming the first row is the header
     const narrationIndex = columns.indexOf('Narration');
+    console.log("narrationIndex is ", narrationIndex);
     const withdrawalAmtIndex = columns.indexOf('Withdrawal Amt.');
     const depositAmtIndex = columns.indexOf('Deposit Amt.');
+    const date = columns.indexOf('Date');
 
     const transactionData = data.slice(1).map((row) => ({
       narration: row[narrationIndex],
       withdrawalAmt: parseFloat(row[withdrawalAmtIndex]) || 0,
       depositAmt: parseFloat(row[depositAmtIndex]) || 0,
+      date: parseDate(row[date]),
     }));
+
+    // Sort transactions by date in descending order
+    transactionData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
+    console.log("transactionData is ", transactionData);
+
+    // Select the latest 5-10 narrations
+    const latestNarrations = transactionData.slice(0, Math.min(10, transactionData.length)).map(transaction => {
+        return {
+        name: transaction.narration,
+        amount: transaction.withdrawalAmt,
+        date: formatDate(transaction.date),
+        }
+    }
+    );
+    console.log("narration is ", latestNarrations);
+                                    
+    
+
 
     // Find the row containing "Opening Balance" and "Closing Balance"
     const balanceLabelsRow = data.find(row => row.includes('Opening Balance'));
@@ -141,6 +231,7 @@ const normFile = (e) => {
 
     return {
       transactionData,
+      latestNarrations,
       balanceData: { openingBalance, closingBalance },
     };
   };
@@ -275,7 +366,9 @@ const normFile = (e) => {
                   setBalanceData({
                     openingBalance: 0,
                     closingBalance: 0
-                  })
+                  });
+                  setRecentTxn([]);
+
                 }}
                 >
                   Click here
@@ -345,9 +438,11 @@ const normFile = (e) => {
               </Typography.Title>
 
               <List
-                dataSource={userState.transaction}
-                renderItem={(item) => (
-                  <List.Item
+                dataSource={recentTxn}
+                renderItem={(item) => {
+                  console.log("item is ",item);
+                  const {mode, nameNarr } = processNarration(item.name);
+                  return <List.Item
                     key={item.transaction_id}
                     className={"listItem"}
                     onClick={() => showModal(item)}
@@ -359,13 +454,14 @@ const normFile = (e) => {
                           src={"https://randomuser.me/api/portraits/men/35.jpg"}
                         />
                       }
-                      title={<span>{item.merchant_name}</span>}
+                      title={<span>{nameNarr}</span>}
                       description={
                         <>
                           {" "}
-                          {item.date?.slice(0, 10)}{" "}
+                          {item.date}
                           <Tag color="#f50">
-                            {userState.tags[item.tag_id]?.tag_name}
+                            {/* {userState.tags[item.tag_id]?.tag_name} */}
+                            {mode}
                           </Tag>
                         </>
                       }
@@ -381,7 +477,8 @@ const normFile = (e) => {
                       </span>
                     </div>
                   </List.Item>
-                )}
+                }
+              }
               />
             </div>
           </div>
