@@ -1,16 +1,15 @@
 {
   "files": {
     "main.css": "/financi/static/css/main.38fe1075.css",
-    "main.js": "/financi/static/js/main.218102ae.js",
+    "main.js": "/financi/static/js/main.87e88141.js",
     "static/js/453.a6a97343.chunk.js": "/financi/static/js/453.a6a97343.chunk.js",
-    "static/media/logo.svg": "/financi/static/media/logo.6ce24c58023cc2f8fd88fe9d219db6c6.svg",
     "index.html": "/financi/index.html",
     "main.38fe1075.css.map": "/financi/static/css/main.38fe1075.css.map",
-    "main.218102ae.js.map": "/financi/static/js/main.218102ae.js.map",
+    "main.87e88141.js.map": "/financi/static/js/main.87e88141.js.map",
     "453.a6a97343.chunk.js.map": "/financi/static/js/453.a6a97343.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.38fe1075.css",
-    "static/js/main.218102ae.js"
+    "static/js/main.87e88141.js"
   ]
 }
