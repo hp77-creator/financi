@@ -109,22 +109,7 @@ const Transactions = ({openingBalance, closingBalance}) => {
         >
           <Card
             style={{
-              height: "50%",
-              borer: "1px solid #dedede",
-              margin: "0 0 5px 0 ",
-            }}
-            title={
-              <Typography.Title
-                level={4}
-                style={{ padding: "10px 0px 0px 10px" }}
-              >
-                Online Transactions
-              </Typography.Title>
-            }
-          ></Card>
-          <Card
-            style={{
-              height: "50%",
+              height: "100%",
               borer: "1px solid #dedede",
               margin: "5px 0 0 0",
             }}

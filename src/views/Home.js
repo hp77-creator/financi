@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useSelector} from "react-redux";
 import readXlsxFile from 'read-excel-file';
 import {
-  DesktopOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PieChartOutlined,
   InboxOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
@@ -26,24 +22,9 @@ import {
 import "./home.css";
 import Transactions from "../components/Transactions/Transactions";
 
-function getItem(label, key, icon, children, type) {
-  return {
-    key,
-    icon,
-    children,
-    label,
-    type,
-  };
-}
-const items = [
-  getItem("Pie Chart", "1", <PieChartOutlined />),
-  getItem("Desktop", "2", <DesktopOutlined />),
-  // getItem("", "3", <ContainerOutlined />),
-];
 const Home = () => {
   const [files, setFiles] = useState([]);
   const userState = useSelector((state) => state.user);
-  const [collapsed, setCollapsed] = useState(false);
   const [balanceData, setBalanceData] = useState({openingBalance: 0, closingBalance: 0});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -163,9 +144,6 @@ const normFile = (e) => {
     setIsModalOpen(false);
   };
 
-  const toggleCollapsed = () => {
-    setCollapsed(!collapsed);
-  };
 
   const processData = (data) => {
     const columns = data[0]; // Assuming the first row is the header
@@ -286,34 +264,6 @@ const normFile = (e) => {
       <div style={{ width: "100%", display: "flex" }}>
         <div
           style={{
-            width: 256,
-            minWidth: "256px",
-          }}
-        >
-          <Menu
-            defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["sub1"]}
-            mode="inline"
-            theme="light"
-            inlineCollapsed={collapsed}
-            items={items}
-            style={{
-              height: "calc(100vh - 64px)",
-            }}
-          >
-            <Button
-              type="primary"
-              onClick={toggleCollapsed}
-              style={{
-                marginBottom: 16,
-              }}
-            >
-              {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            </Button>
-          </Menu>
-        </div>
-        <div
-          style={{
             height: "calc(100vh - 64px)",
             width: "100%",
             display: "block",
@@ -323,7 +273,14 @@ const normFile = (e) => {
         >
           <Card style={{ width: "100%", marginTop: 16, height: "min-content" }}>
             { !inputBox ? 
-            <div>
+            <div 
+             style={{
+              display: "flex",
+              justifyContent:"center",
+              alignItems: "center",
+              textAlign: "center"
+             }}
+            >
               <Card>
                 Thank you for loading your statement.
                 <br/>
@@ -343,7 +300,7 @@ const normFile = (e) => {
                 >
                   Click here
                 </Button>
-                <br/>to see view for another statement.
+                <br/>to view another statement.
               </Card>
             </div> :
             <Form onFinish={() => {}}>
@@ -398,6 +355,7 @@ const normFile = (e) => {
                 borderRadius: "10px",
                 maxHeight: "856px",
                 overflow: "auto",
+                padding: "20px",
               }}
             >
               <Typography.Title
