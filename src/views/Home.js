@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
 import readXlsxFile from 'read-excel-file';
 import { InboxOutlined} from "@ant-design/icons";
 import {
@@ -44,6 +43,7 @@ const Home = () => {
       const rows = await readXlsxFile(file);
       const processed = processData(rows);
       setRecentTxn(processed.latestNarrations);
+      console.log("balanceData", processed.balanceData);
       setBalanceData(processed.balanceData);
     } catch (error) {
       console.error('Error uploading file:', error.message);

@@ -16,32 +16,6 @@ const Transactions = ({openingBalance, closingBalance}) => {
     courseSelected: "Monthly Spends",
     marks: [0, 0, 0, 0],
   });
-  useEffect(() => {}, []);
-  let transactions = useSelector((state) => state.user.transaction);
-  useEffect(() => {
-    if (!transactions?.length) return;
-    let balanceGraph = [];
-    let debitGraph = [];
-    let creditGraph = [];
-    let xAxis = [];
-
-    for (let i = 0; i < transactions.length; i++) {
-      balanceGraph.push(Number(transactions[i]?.closing_balance));
-      if (transactions[i].type === true) {
-        creditGraph.push(Number(transactions[i]?.amount));
-        debitGraph.push(0.0);
-      } else {
-        creditGraph.push(0.0);
-        debitGraph.push(Number(transactions[i]?.amount));
-      }
-      xAxis.push(transactions[i]["date"]);
-    }
-    setChartState((prev) => {
-      return { ...prev, balanceGraph, debitGraph, creditGraph, xAxis };
-    });
-  }, [transactions]);
-  useEffect(() => {
-  }, [chartState]);
   const options = {
     chart: {
       type: "spline",
