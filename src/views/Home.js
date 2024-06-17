@@ -1,27 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector} from "react-redux";
 import readXlsxFile from 'read-excel-file';
 import {
-  AppstoreOutlined,
-  ContainerOutlined,
   DesktopOutlined,
-  MailOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   PieChartOutlined,
-  SettingOutlined,
-  EditOutlined,
   InboxOutlined,
-  EllipsisOutlined,
   HomeOutlined,
 } from "@ant-design/icons";
 import {
   Button,
   Menu,
   Layout,
-  Header,
   Card,
-  Skeleton,
   Avatar,
   Form,
   Upload,
@@ -31,16 +23,8 @@ import {
   Tag,
   Modal,
 } from "antd";
-import {
-  addConvertedData,
-  addTags,
-  addTransactions,
-} from "../reducers/users/userSlice";
 import "./home.css";
-import { APYHUB_Bar_Request } from "../functions/APYHUB";
 import Transactions from "../components/Transactions/Transactions";
-import { HOST, PDF_HOST } from "../constants";
-const csv = require("csvtojson");
 
 function getItem(label, key, icon, children, type) {
   return {
@@ -51,18 +35,15 @@ function getItem(label, key, icon, children, type) {
     type,
   };
 }
-const { Meta } = Card;
 const items = [
   getItem("Pie Chart", "1", <PieChartOutlined />),
   getItem("Desktop", "2", <DesktopOutlined />),
   // getItem("", "3", <ContainerOutlined />),
 ];
 const Home = () => {
-  const dispatch = useDispatch();
   const [files, setFiles] = useState([]);
   const userState = useSelector((state) => state.user);
   const [collapsed, setCollapsed] = useState(false);
-  const [converted, setConverted] = useState([]);
   const [balanceData, setBalanceData] = useState({openingBalance: 0, closingBalance: 0});
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -90,7 +71,6 @@ const Home = () => {
   };
   const parseDate = (dateString) => {
     // Assuming dateString is in the format DD/MM/YY
-    console.log("datestring is ", dateString);
     if(dateString == null || !isValidDateFormat(dateString)) return new Date();
     const [day, month, year] = dateString.split('/');
   
@@ -123,7 +103,6 @@ const handleUpload = async () => {
     // Perform the upload or any other necessary actions with the file data
     const processed = processData(rows);
     setRecentTxn(processed.latestNarrations);
-    console.log("narrations are",processed.latestNarrations);
     setBalanceData(processed.balanceData);
   } catch (error) {
     console.error('Error uploading file:', error.message);
@@ -164,7 +143,6 @@ const processNarration = (narration) => {
   };
 };
 const normFile = (e) => {
-    console.log('Upload event:', e);
     if (Array.isArray(e)) {
       return e;
     }
@@ -192,7 +170,6 @@ const normFile = (e) => {
   const processData = (data) => {
     const columns = data[0]; // Assuming the first row is the header
     const narrationIndex = columns.indexOf('Narration');
-    console.log("narrationIndex is ", narrationIndex);
     const withdrawalAmtIndex = columns.indexOf('Withdrawal Amt.');
     const depositAmtIndex = columns.indexOf('Deposit Amt.');
     const date = columns.indexOf('Date');
@@ -206,7 +183,6 @@ const normFile = (e) => {
 
     // Sort transactions by date in descending order
     transactionData.sort((a, b) => parseDate(b.date) - parseDate(a.date));
-    console.log("transactionData is ", transactionData);
 
     // Select the latest 5-10 narrations
     const latestNarrations = transactionData.slice(0, Math.min(10, transactionData.length)).map(transaction => {
@@ -217,7 +193,6 @@ const normFile = (e) => {
         }
     }
     );
-    console.log("narration is ", latestNarrations);
                                     
     
 
@@ -242,11 +217,6 @@ const normFile = (e) => {
     // loadTransactions();
   }, [userState.transactions]);
 
-  const [current, setCurrent] = useState("mail");
-  const onClick = (e) => {
-    console.log("click ", e);
-    setCurrent(e.key);
-  };
 
   return (
     <div>
@@ -406,7 +376,7 @@ const normFile = (e) => {
                   type="primary"
                   size="large"
                   htmlType="submit"
-                  disabled ={files.length == 0} 
+                  disabled ={files.length === 0} 
                   onClick={handleUpload}
                 >
                   Submit
@@ -440,7 +410,6 @@ const normFile = (e) => {
               <List
                 dataSource={recentTxn}
                 renderItem={(item) => {
-                  console.log("item is ",item);
                   const {mode, nameNarr } = processNarration(item.name);
                   return <List.Item
                     key={item.transaction_id}

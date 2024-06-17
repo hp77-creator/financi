@@ -2,16 +2,8 @@ import { Button, Card, Modal, Typography } from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
-  AppstoreOutlined,
-  ContainerOutlined,
-  DesktopOutlined,
-  MailOutlined,
-  MenuFoldOutlined,
-  MenuUnfoldOutlined,
-  PieChartOutlined,
   SettingOutlined,
   EditOutlined,
-  InboxOutlined,
   EllipsisOutlined,
 } from "@ant-design/icons";
 import AccountSummary from "./AccountSummary";
@@ -27,7 +19,6 @@ const Transactions = ({openingBalance, closingBalance}) => {
   useEffect(() => {}, []);
   let transactions = useSelector((state) => state.user.transaction);
   useEffect(() => {
-    console.log(transactions);
     if (!transactions?.length) return;
     let balanceGraph = [];
     let debitGraph = [];
@@ -50,7 +41,6 @@ const Transactions = ({openingBalance, closingBalance}) => {
     });
   }, [transactions]);
   useEffect(() => {
-    console.log(chartState);
   }, [chartState]);
   const options = {
     chart: {

@@ -1,4 +1,4 @@
-import { Card, Typography } from "antd";
+import {Typography } from "antd";
 import React from "react";
 const AccountSummary = ({openingBalance, closingBalance}) => {
   return (
